@@ -1,26 +1,57 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react"
+import { fetchData } from "./service/AxiosService";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface UserTemplate {
+    id: string,
+    name: string,
+    address: string
 }
 
-export default App;
+export default function App() {
+    const [count, setCount] = useState(0);
+    const [data, setData] = useState<UserTemplate[]>([]);
+
+    useEffect(() => {
+        const getData = async () => {
+            try{
+                const result: UserTemplate[] = await fetchData('/users');
+                console.log("res ", result);
+                setData(result);
+            }
+            catch(err){
+                console.log("err ", err)
+            }
+        }
+
+        getData();
+    }, [])
+
+    const increment = () => {
+        setCount(count + 1);
+    }
+
+    const decrement = () => {
+        setCount(count - 1);
+    }
+    return(
+        <div>
+            <h2>Calorie Craft</h2>
+            <h3>Count variable : {count}</h3>
+            <button onClick={increment}>
+                +
+            </button>
+
+            <button onClick={decrement} style={{margin: "20px"}}>
+                -
+            </button>
+
+            {
+                data && data.map((el) => (
+                    <div>
+                        UserName : {el.name} {" "} {el.address}
+                    </div>
+                ))
+            }
+        </div>
+    )
+}
